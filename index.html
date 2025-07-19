@@ -8,6 +8,9 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <!-- FileSaver.js for Excel export -->
     <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <!-- jsPDF for PDF export with Arabic support -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -100,13 +103,14 @@
         }
         
         .chip {
-            padding: 2px 8px;
+            padding: 4px 12px;
             border-radius: 9999px;
             font-size: 0.75rem;
             font-weight: 500;
             margin-right: 4px;
             margin-bottom: 4px;
             display: inline-block;
+            white-space: nowrap;
         }
         
         [dir="rtl"] .chip {
@@ -226,18 +230,27 @@
             background: #718096;
         }
 
-        /* Table styles */
+        /* Professional Table styles */
         .assessment-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         
         .assessment-table th {
             text-align: left;
-            padding: 12px;
-            background-color: #f8fafc;
+            padding: 16px 12px;
+            background: linear-gradient(135deg, #5D5CDE 0%, #4c4cb8 100%);
+            color: white;
             font-weight: 600;
-            border-bottom: 2px solid #e2e8f0;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: none;
             position: sticky;
             top: 0;
             z-index: 10;
@@ -247,27 +260,154 @@
             text-align: right;
         }
         
-        .dark .assessment-table th {
-            background-color: #1e293b;
-            border-bottom: 2px solid #334155;
+        .dark .assessment-table {
+            border: 1px solid #374151;
         }
         
         .assessment-table td {
-            padding: 12px;
-            border-bottom: 1px solid #e2e8f0;
+            padding: 16px 12px;
+            border-bottom: 1px solid #f1f5f9;
             vertical-align: top;
+            background-color: #ffffff;
+            transition: all 0.2s ease;
         }
         
         .dark .assessment-table td {
-            border-bottom: 1px solid #334155;
+            border-bottom: 1px solid #374151;
+            background-color: #1f2937;
         }
         
-        .assessment-table tr:hover {
-            background-color: #f1f5f9;
+        .assessment-table tr:hover td {
+            background-color: #f8fafc;
+            transform: scale(1.01);
         }
         
-        .dark .assessment-table tr:hover {
-            background-color: #1e293b;
+        .dark .assessment-table tr:hover td {
+            background-color: #374151;
+        }
+        
+        .assessment-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Risk level badges */
+        .risk-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .risk-badge-high {
+            background-color: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        
+        .risk-badge-medium {
+            background-color: #fed7aa;
+            color: #ea580c;
+            border: 1px solid #fdba74;
+        }
+        
+        .risk-badge-low {
+            background-color: #dcfce7;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+        
+        .dark .risk-badge-high {
+            background-color: rgba(220, 38, 38, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+        
+        .dark .risk-badge-medium {
+            background-color: rgba(234, 88, 12, 0.2);
+            color: #fdba74;
+            border: 1px solid rgba(234, 88, 12, 0.3);
+        }
+        
+        .dark .risk-badge-low {
+            background-color: rgba(22, 163, 74, 0.2);
+            color: #86efac;
+            border: 1px solid rgba(22, 163, 74, 0.3);
+        }
+
+        /* Action buttons */
+        .action-btn {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            margin-right: 4px;
+        }
+        
+        [dir="rtl"] .action-btn {
+            margin-right: 0;
+            margin-left: 4px;
+        }
+        
+        .action-btn-view {
+            background-color: #eff6ff;
+            color: #2563eb;
+            border-color: #dbeafe;
+        }
+        
+        .action-btn-view:hover {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+        }
+        
+        .action-btn-edit {
+            background-color: #f0fdf4;
+            color: #16a34a;
+            border-color: #dcfce7;
+        }
+        
+        .action-btn-edit:hover {
+            background-color: #dcfce7;
+            color: #15803d;
+        }
+        
+        .action-btn-delete {
+            background-color: #fef2f2;
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+        
+        .action-btn-delete:hover {
+            background-color: #fecaca;
+            color: #b91c1c;
+        }
+        
+        .dark .action-btn-view {
+            background-color: rgba(37, 99, 235, 0.2);
+            color: #93c5fd;
+            border-color: rgba(37, 99, 235, 0.3);
+        }
+        
+        .dark .action-btn-edit {
+            background-color: rgba(22, 163, 74, 0.2);
+            color: #86efac;
+            border-color: rgba(22, 163, 74, 0.3);
+        }
+        
+        .dark .action-btn-delete {
+            background-color: rgba(220, 38, 38, 0.2);
+            color: #fca5a5;
+            border-color: rgba(220, 38, 38, 0.3);
         }
 
         /* Modal styles */
@@ -289,8 +429,15 @@
             border-radius: 0.5rem;
             padding: 1.5rem;
             max-width: 90%;
-            width: 400px;
+            width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .modal-content-lg {
+            width: 800px;
+            max-width: 95%;
         }
 
         .dark .modal-content {
@@ -307,6 +454,54 @@
             .responsive-table::-webkit-scrollbar {
                 height: 6px;
             }
+            
+            .assessment-table th,
+            .assessment-table td {
+                padding: 12px 8px;
+                font-size: 0.8rem;
+            }
+            
+            .action-btn {
+                padding: 6px 8px;
+                font-size: 0.7rem;
+            }
+        }
+        
+        /* Logo upload styles */
+        .logo-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .logo-upload {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .logo-image {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+        
+        .logo-image:hover {
+            border-color: #5D5CDE;
+        }
+        
+        .dark .logo-image {
+            border-color: #4b5563;
+        }
+        
+        .dark .logo-image:hover {
+            border-color: #5D5CDE;
         }
         
         /* Index error styles */
@@ -402,15 +597,15 @@
         <nav class="bg-white dark:bg-gray-800 rounded-lg shadow-md mb-6 p-4">
             <div class="flex items-center justify-between flex-wrap">
                 <div class="flex items-center space-x-4 rtl:space-x-reverse">
-                    <!-- Logo SVG for Baniyas International School -->
-                    <div class="h-12 w-12 flex-shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-full h-full">
-                            <circle cx="50" cy="50" r="45" fill="#5D5CDE" />
-                            <circle cx="50" cy="50" r="35" fill="#ffffff" />
-                            <text x="50" y="42" font-family="Arial" font-size="16" fill="#5D5CDE" text-anchor="middle" font-weight="bold">BANIYAS</text>
-                            <text x="50" y="58" font-family="Arial" font-size="10" fill="#5D5CDE" text-anchor="middle">INTERNATIONAL</text>
-                            <text x="50" y="68" font-family="Arial" font-size="12" fill="#5D5CDE" text-anchor="middle" font-weight="bold">NURSERY</text>
-                        </svg>
+                    <!-- Custom Logo Upload -->
+                    <div class="logo-container">
+                        <img id="school-logo" src="" alt="School Logo" class="logo-image" style="display: none;">
+                        <div id="default-logo" class="h-12 w-12 flex-shrink-0">
+                            <img src="https://www2.0zz0.com/2025/07/19/13/298532964.jpg" 
+                                 alt="Baniyas International School Logo" 
+                                 class="w-full h-full rounded-full object-cover border-2 border-primary">
+                        </div>
+                        <input type="file" id="logo-upload" class="logo-upload" accept="image/*" title="Click to change logo">
                     </div>
                     <div>
                         <h1 class="text-xl font-bold text-primary dark:text-blue-400" data-i18n="nursery_title">Baniyas International School</h1>
@@ -474,10 +669,18 @@
                     <h2 class="text-2xl font-bold" data-i18n="daily_risk_assessment">Daily Risk Assessment</h2>
                     <p class="text-gray-600 dark:text-gray-400" id="current-date-display">Loading...</p>
                 </div>
-                <div class="mt-4 md:mt-0">
+                <div class="mt-4 md:mt-0 flex space-x-3 rtl:space-x-reverse">
                     <div class="relative">
                         <label for="assessment-date" class="block text-sm font-medium mb-1" data-i18n="assessment_date">Assessment Date:</label>
                         <input type="date" id="assessment-date" class="p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-base" required>
+                    </div>
+                    <div class="flex items-end space-x-2 rtl:space-x-reverse">
+                        <button id="manage-locations-btn" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition" data-i18n="manage_locations">
+                            Manage Locations
+                        </button>
+                        <button id="manage-risks-btn" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm transition" data-i18n="manage_risks">
+                            Manage Risk Types
+                        </button>
                     </div>
                 </div>
             </header>
@@ -682,12 +885,26 @@
                     <div id="assessment-results" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-medium" data-i18n="risk_assessments">Risk Assessments</h3>
-                            <button id="export-excel" class="py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition duration-200 flex items-center" disabled>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 rtl:mr-0 rtl:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                                <span data-i18n="export_excel">Export to Excel</span>
-                            </button>
+                            <div class="flex space-x-2 rtl:space-x-reverse">
+                                <button id="export-excel" class="py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition duration-200 flex items-center" disabled>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 rtl:mr-0 rtl:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    <span data-i18n="export_excel">Export to Excel</span>
+                                </button>
+                                <button id="export-pdf" class="py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition duration-200 flex items-center" disabled>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 rtl:mr-0 rtl:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    </svg>
+                                    <span data-i18n="export_pdf">Export to PDF</span>
+                                </button>
+                                <button id="print-pdf" class="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center" disabled>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 rtl:mr-0 rtl:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                    </svg>
+                                    <span data-i18n="print_pdf">Print PDF</span>
+                                </button>
+                            </div>
                         </div>
                         <div id="loading-assessments" class="py-10 text-center">
                             <div class="spinner mb-3"></div>
@@ -721,7 +938,7 @@
 
     <!-- Assessment Details Modal -->
     <div id="details-modal" class="modal">
-        <div class="modal-content max-w-2xl">
+        <div class="modal-content modal-content-lg">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-medium" id="details-modal-title" data-i18n="assessment_details">Risk Assessment Details</h3>
                 <button id="close-details-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
@@ -737,6 +954,99 @@
                 <button id="close-details-btn" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium rounded-lg transition-colors duration-200" data-i18n="close">
                     Close
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Assessment Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content modal-content-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium" data-i18n="edit_assessment">Edit Risk Assessment</h3>
+                <button id="close-edit-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+            <form id="edit-assessment-form" class="space-y-4">
+                <!-- Edit form will be populated here -->
+            </form>
+        </div>
+    </div>
+
+    <!-- Manage Locations Modal -->
+    <div id="locations-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium" data-i18n="manage_locations">Manage Locations</h3>
+                <button id="close-locations-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <form id="add-location-form" class="space-y-3">
+                    <h4 class="font-medium" data-i18n="add_new_location">Add New Location</h4>
+                    <div>
+                        <label for="location-en" class="block text-sm font-medium mb-1">English Name:</label>
+                        <input type="text" id="location-en" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-base" required>
+                    </div>
+                    <div>
+                        <label for="location-ar" class="block text-sm font-medium mb-1">Arabic Name:</label>
+                        <input type="text" id="location-ar" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-base" required>
+                    </div>
+                    <button type="submit" class="w-full py-2 px-4 bg-primary hover:bg-primary-dark text-white font-medium rounded-lg transition" data-i18n="add_location">
+                        Add Location
+                    </button>
+                </form>
+                
+                <div id="locations-list" class="space-y-2 max-h-60 overflow-y-auto">
+                    <h4 class="font-medium" data-i18n="existing_locations">Existing Locations</h4>
+                    <!-- Locations will be listed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Risk Types Modal -->
+    <div id="risks-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium" data-i18n="manage_risks">Manage Risk Types</h3>
+                <button id="close-risks-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <form id="add-risk-form" class="space-y-3">
+                    <h4 class="font-medium" data-i18n="add_new_risk_type">Add New Risk Type</h4>
+                    <div>
+                        <label for="risk-location-select" class="block text-sm font-medium mb-1" data-i18n="location">Location:</label>
+                        <select id="risk-location-select" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-base" required>
+                            <option value="" disabled selected data-i18n="select_location">Select a location</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="risk-en" class="block text-sm font-medium mb-1">English Risk Type:</label>
+                        <input type="text" id="risk-en" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-base" required>
+                    </div>
+                    <div>
+                        <label for="risk-ar" class="block text-sm font-medium mb-1">Arabic Risk Type:</label>
+                        <input type="text" id="risk-ar" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-base" required>
+                    </div>
+                    <button type="submit" class="w-full py-2 px-4 bg-primary hover:bg-primary-dark text-white font-medium rounded-lg transition" data-i18n="add_risk_type">
+                        Add Risk Type
+                    </button>
+                </form>
+                
+                <div id="risks-list" class="space-y-2 max-h-60 overflow-y-auto">
+                    <h4 class="font-medium" data-i18n="existing_risk_types">Existing Risk Types</h4>
+                    <!-- Risk types will be listed here -->
+                </div>
             </div>
         </div>
     </div>
@@ -856,6 +1166,18 @@
                 additional_notes: "Additional Notes:",
                 notes_placeholder: "Add any additional information about the risk...",
                 add_risk_assessment: "Add Risk Assessment",
+                edit_assessment: "Edit Risk Assessment",
+                update_assessment: "Update Assessment",
+                
+                // Management
+                manage_locations: "Manage Locations",
+                manage_risks: "Manage Risk Types",
+                add_new_location: "Add New Location",
+                add_location: "Add Location",
+                existing_locations: "Existing Locations",
+                add_new_risk_type: "Add New Risk Type",
+                add_risk_type: "Add Risk Type",
+                existing_risk_types: "Existing Risk Types",
                 
                 // Guidelines
                 risk_guidelines: "Risk Management Guidelines",
@@ -873,12 +1195,15 @@
                 // Assessment Results
                 risk_assessments: "Risk Assessments",
                 export_excel: "Export to Excel",
+                export_pdf: "Export to PDF",
+                print_pdf: "Print PDF",
                 loading_assessments: "Loading assessments...",
                 no_assessments: "No risk assessments added yet.",
                 affected: "Affected",
                 mitigation: "Mitigation",
                 actions: "Actions",
                 view: "View",
+                edit: "Edit",
                 delete: "Delete",
                 
                 // Modal
@@ -902,11 +1227,15 @@
                 
                 // Toast messages
                 added_successfully: "Risk assessment added successfully",
+                updated_successfully: "Risk assessment updated successfully",
                 deleted_successfully: "Risk assessment deleted successfully",
                 logged_in_successfully: "Logged in successfully",
                 account_created_successfully: "Account created successfully",
                 no_assessments_export: "No assessments to export",
                 excel_downloaded: "Excel file downloaded successfully",
+                pdf_downloaded: "PDF file downloaded successfully",
+                location_added: "Location added successfully",
+                risk_type_added: "Risk type added successfully",
                 
                 // Error messages
                 fill_required_fields: "Please fill in all required fields",
@@ -965,6 +1294,18 @@
                 additional_notes: "ملاحظات إضافية:",
                 notes_placeholder: "أضف أي معلومات إضافية حول المخاطر...",
                 add_risk_assessment: "إضافة تقييم المخاطر",
+                edit_assessment: "تعديل تقييم المخاطر",
+                update_assessment: "تحديث التقييم",
+                
+                // Management
+                manage_locations: "إدارة الأماكن",
+                manage_risks: "إدارة أنواع المخاطر",
+                add_new_location: "إضافة مكان جديد",
+                add_location: "إضافة مكان",
+                existing_locations: "الأماكن الموجودة",
+                add_new_risk_type: "إضافة نوع مخاطر جديد",
+                add_risk_type: "إضافة نوع مخاطر",
+                existing_risk_types: "أنواع المخاطر الموجودة",
                 
                 // Guidelines
                 risk_guidelines: "إرشادات إدارة المخاطر",
@@ -982,12 +1323,15 @@
                 // Assessment Results
                 risk_assessments: "تقييمات المخاطر",
                 export_excel: "تصدير إلى Excel",
+                export_pdf: "تصدير إلى PDF",
+                print_pdf: "طباعة PDF",
                 loading_assessments: "جاري تحميل التقييمات...",
                 no_assessments: "لم يتم إضافة أي تقييمات مخاطر بعد.",
                 affected: "المتأثرون",
                 mitigation: "التخفيف",
                 actions: "الإجراءات",
                 view: "عرض",
+                edit: "تعديل",
                 delete: "حذف",
                 
                 // Modal
@@ -1011,11 +1355,15 @@
                 
                 // Toast messages
                 added_successfully: "تم إضافة تقييم المخاطر بنجاح",
+                updated_successfully: "تم تحديث تقييم المخاطر بنجاح",
                 deleted_successfully: "تم حذف تقييم المخاطر بنجاح",
                 logged_in_successfully: "تم تسجيل الدخول بنجاح",
                 account_created_successfully: "تم إنشاء الحساب بنجاح",
                 no_assessments_export: "لا توجد تقييمات للتصدير",
                 excel_downloaded: "تم تنزيل ملف Excel بنجاح",
+                pdf_downloaded: "تم تنزيل ملف PDF بنجاح",
+                location_added: "تم إضافة المكان بنجاح",
+                risk_type_added: "تم إضافة نوع المخاطر بنجاح",
                 
                 // Error messages
                 fill_required_fields: "يرجى ملء جميع الحقول المطلوبة",
@@ -1024,6 +1372,10 @@
                 date_format: "ar-EG"
             }
         };
+        
+        // Custom locations and risk types storage
+        let customLocations = {};
+        let customRiskTypes = {};
         
         // Initialize dark mode based on user preference
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -1037,6 +1389,38 @@
                 document.documentElement.classList.remove('dark');
             }
         });
+        
+        // Logo management
+        function initLogo() {
+            const logoUpload = document.getElementById('logo-upload');
+            const schoolLogo = document.getElementById('school-logo');
+            const defaultLogo = document.getElementById('default-logo');
+            
+            // Load saved logo from localStorage
+            const savedLogo = localStorage.getItem('schoolLogo');
+            if (savedLogo) {
+                schoolLogo.src = savedLogo;
+                schoolLogo.style.display = 'block';
+                defaultLogo.style.display = 'none';
+            }
+            
+            logoUpload.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const logoDataUrl = e.target.result;
+                        schoolLogo.src = logoDataUrl;
+                        schoolLogo.style.display = 'block';
+                        defaultLogo.style.display = 'none';
+                        
+                        // Save to localStorage
+                        localStorage.setItem('schoolLogo', logoDataUrl);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
         
         // Language management functions
         function toggleLanguage() {
@@ -1094,26 +1478,52 @@
         function updateLocationDropdowns() {
             const locationSelect = document.getElementById('location');
             const searchLocationSelect = document.getElementById('search-location');
+            const riskLocationSelect = document.getElementById('risk-location-select');
             
             // Clear existing options (except the first placeholder option)
             locationSelect.innerHTML = `<option value="" disabled selected>${translations[currentLanguage].select_location}</option>`;
-            
             searchLocationSelect.innerHTML = `<option value="">${translations[currentLanguage].all_locations}</option>`;
+            if (riskLocationSelect) {
+                riskLocationSelect.innerHTML = `<option value="" disabled selected>${translations[currentLanguage].select_location}</option>`;
+            }
             
-            // Add location options
-            const locationKeys = ['room-0-1', 'room-1-2', 'room-2-3', 'indoor-play', 'sand-play', 'messy-play', 'drop-pickup', 'outings', 'health-illness'];
+            // Get all locations (default + custom)
+            const allLocations = { ...getDefaultLocations(), ...customLocations };
             
-            locationKeys.forEach(key => {
+            Object.keys(allLocations).forEach(key => {
+                const locationName = allLocations[key][currentLanguage] || allLocations[key]['en'];
+                
                 const option1 = document.createElement('option');
                 option1.value = key;
-                option1.textContent = translations[currentLanguage][key];
+                option1.textContent = locationName;
                 locationSelect.appendChild(option1);
                 
                 const option2 = document.createElement('option');
-                option2.value = translations[currentLanguage][key];
-                option2.textContent = translations[currentLanguage][key];
+                option2.value = locationName;
+                option2.textContent = locationName;
                 searchLocationSelect.appendChild(option2);
+                
+                if (riskLocationSelect) {
+                    const option3 = document.createElement('option');
+                    option3.value = key;
+                    option3.textContent = locationName;
+                    riskLocationSelect.appendChild(option3);
+                }
             });
+        }
+        
+        function getDefaultLocations() {
+            return {
+                'room-0-1': { en: 'Room 0-1 years', ar: 'غرفة 0-1 سنة' },
+                'room-1-2': { en: 'Room 1-2 years', ar: 'غرفة 1-2 سنة' },
+                'room-2-3': { en: 'Room 2-3 years', ar: 'غرفة 2-3 سنوات' },
+                'indoor-play': { en: 'Indoor play areas', ar: 'مناطق اللعب الداخلية' },
+                'sand-play': { en: 'Sand play', ar: 'لعب الرمل' },
+                'messy-play': { en: 'Messy play / cooking', ar: 'اللعب الفوضوي / الطبخ' },
+                'drop-pickup': { en: 'Drop off / pick up', ar: 'التوصيل / الاستلام' },
+                'outings': { en: 'Outings', ar: 'الرحلات' },
+                'health-illness': { en: 'Health & illness', ar: 'الصحة والمرض' }
+            };
         }
         
         function t(key) {
@@ -1532,6 +1942,25 @@
             return currentLanguage === 'ar' ? affectedLabelsAr : affectedLabelsEn;
         }
         
+        // Load custom data from localStorage
+        function loadCustomData() {
+            const savedLocations = localStorage.getItem('customLocations');
+            if (savedLocations) {
+                customLocations = JSON.parse(savedLocations);
+            }
+            
+            const savedRiskTypes = localStorage.getItem('customRiskTypes');
+            if (savedRiskTypes) {
+                customRiskTypes = JSON.parse(savedRiskTypes);
+            }
+        }
+        
+        // Save custom data to localStorage
+        function saveCustomData() {
+            localStorage.setItem('customLocations', JSON.stringify(customLocations));
+            localStorage.setItem('customRiskTypes', JSON.stringify(customRiskTypes));
+        }
+        
         // Show assessment details in modal
         function showAssessmentDetails(assessment) {
             const detailsModal = document.getElementById('details-modal');
@@ -1568,9 +1997,9 @@
                         
                         <div>
                             <p class="font-medium">${t('risk_level')}:</p>
-                            <p class="${assessment.riskLevel === 'high' ? 'text-red-500' : assessment.riskLevel === 'medium' ? 'text-orange-500' : 'text-green-500'} font-medium">
+                            <span class="risk-badge risk-badge-${assessment.riskLevel}">
                                 ${t(assessment.riskLevel)}
-                            </p>
+                            </span>
                         </div>
                     </div>
                     
@@ -1610,6 +2039,213 @@
             // Add event listeners
             closeDetailsBtn.addEventListener('click', closeModal);
             closeDetailsModal.addEventListener('click', closeModal);
+        }
+        
+        // Show edit assessment modal
+        function showEditAssessment(id, assessment) {
+            const editModal = document.getElementById('edit-modal');
+            const editForm = document.getElementById('edit-assessment-form');
+            const closeEditModal = document.getElementById('close-edit-modal');
+            
+            // Create form HTML
+            editForm.innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label for="edit-location" class="block font-medium mb-2" data-i18n="location">Location:</label>
+                        <select id="edit-location" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-base" required>
+                            ${getLocationOptions(assessment.locationKey)}
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="edit-risk-type" class="block font-medium mb-2" data-i18n="risk_type">Risk Type:</label>
+                        <select id="edit-risk-type" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-base" required>
+                            <option value="" disabled>${t('select_risk_type')}</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block font-medium mb-2" data-i18n="risk_level">Risk Level:</label>
+                        <div class="flex flex-wrap gap-4">
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="radio" name="edit-risk-level" value="high" class="sr-only peer" ${assessment.riskLevel === 'high' ? 'checked' : ''} required>
+                                <div class="w-6 h-6 border-2 border-red-500 rounded-full peer-checked:bg-red-500 peer-checked:border-red-500 mr-2 rtl:mr-0 rtl:ml-2"></div>
+                                <span class="text-red-500 font-medium" data-i18n="high">High</span>
+                            </label>
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="radio" name="edit-risk-level" value="medium" class="sr-only peer" ${assessment.riskLevel === 'medium' ? 'checked' : ''}>
+                                <div class="w-6 h-6 border-2 border-orange-500 rounded-full peer-checked:bg-orange-500 peer-checked:border-orange-500 mr-2 rtl:mr-0 rtl:ml-2"></div>
+                                <span class="text-orange-500 font-medium" data-i18n="medium">Medium</span>
+                            </label>
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="radio" name="edit-risk-level" value="low" class="sr-only peer" ${assessment.riskLevel === 'low' ? 'checked' : ''}>
+                                <div class="w-6 h-6 border-2 border-green-500 rounded-full peer-checked:bg-green-500 peer-checked:border-green-500 mr-2 rtl:mr-0 rtl:ml-2"></div>
+                                <span class="text-green-500 font-medium" data-i18n="low">Low</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block font-medium mb-2" data-i18n="affected_people">Affected People:</label>
+                        <div class="flex flex-wrap gap-3">
+                            ${getAffectedOptions(assessment.affected)}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="edit-mitigation" class="block font-medium mb-2" data-i18n="mitigation_strategy">Risk Mitigation Strategy:</label>
+                        <textarea id="edit-mitigation" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-base" rows="3" required>${assessment.mitigation}</textarea>
+                    </div>
+                    
+                    <div>
+                        <label for="edit-notes" class="block font-medium mb-2" data-i18n="additional_notes">Additional Notes:</label>
+                        <textarea id="edit-notes" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-base" rows="2">${assessment.notes || ''}</textarea>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3 rtl:space-x-reverse pt-4">
+                        <button type="button" id="cancel-edit" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium rounded-lg transition-colors duration-200" data-i18n="cancel">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary-dark text-white font-medium rounded-lg transition-colors duration-200" data-i18n="update_assessment">
+                            Update Assessment
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Update translations
+            updateTranslations();
+            
+            // Populate risk types based on selected location
+            const editLocationSelect = document.getElementById('edit-location');
+            const editRiskTypeSelect = document.getElementById('edit-risk-type');
+            
+            updateRiskTypesForLocation(editLocationSelect.value, editRiskTypeSelect, assessment.riskTypeKey);
+            
+            editLocationSelect.addEventListener('change', function() {
+                updateRiskTypesForLocation(this.value, editRiskTypeSelect);
+            });
+            
+            // Show modal
+            editModal.style.display = 'flex';
+            
+            // Handle form submission
+            editForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                updateAssessment(id);
+            });
+            
+            // Handle cancel
+            document.getElementById('cancel-edit').addEventListener('click', function() {
+                editModal.style.display = 'none';
+            });
+            
+            // Handle close
+            closeEditModal.addEventListener('click', function() {
+                editModal.style.display = 'none';
+            });
+        }
+        
+        function getLocationOptions(selectedKey) {
+            const allLocations = { ...getDefaultLocations(), ...customLocations };
+            let options = `<option value="" disabled>${t('select_location')}</option>`;
+            
+            Object.keys(allLocations).forEach(key => {
+                const locationName = allLocations[key][currentLanguage] || allLocations[key]['en'];
+                const selected = key === selectedKey ? 'selected' : '';
+                options += `<option value="${key}" ${selected}>${locationName}</option>`;
+            });
+            
+            return options;
+        }
+        
+        function getAffectedOptions(selectedAffected) {
+            const affectedOptions = ['children', 'teachers', 'staff', 'others', 'everyone'];
+            const labels = getAffectedLabels();
+            
+            return affectedOptions.map(option => {
+                const checked = selectedAffected.includes(option) ? 'checked' : '';
+                return `
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="edit-affected" value="${option}" class="sr-only peer" ${checked}>
+                        <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full peer-checked:bg-blue-600 peer-checked:text-white text-sm font-medium transition-colors dark:bg-blue-900 dark:text-blue-200 dark:peer-checked:bg-blue-600 dark:peer-checked:text-white">
+                            ${labels[option]}
+                        </div>
+                    </label>
+                `;
+            }).join('');
+        }
+        
+        function updateRiskTypesForLocation(locationKey, riskTypeSelect, selectedRiskKey = null) {
+            // Clear existing options
+            riskTypeSelect.innerHTML = `<option value="" disabled selected>${t('select_risk_type')}</option>`;
+            
+            if (!locationKey) return;
+            
+            // Get risks for this location
+            const defaultRisks = getRisksByLocation()[locationKey] || [];
+            const customRisks = customRiskTypes[locationKey] || {};
+            
+            // Add default risks
+            defaultRisks.forEach(risk => {
+                const riskKey = risk.toLowerCase().replace(/\s+/g, '-');
+                const selected = riskKey === selectedRiskKey ? 'selected' : '';
+                const option = document.createElement('option');
+                option.value = riskKey;
+                option.textContent = risk;
+                option.selected = selected;
+                riskTypeSelect.appendChild(option);
+            });
+            
+            // Add custom risks
+            Object.keys(customRisks).forEach(riskKey => {
+                const riskName = customRisks[riskKey][currentLanguage] || customRisks[riskKey]['en'];
+                const selected = riskKey === selectedRiskKey ? 'selected' : '';
+                const option = document.createElement('option');
+                option.value = riskKey;
+                option.textContent = riskName;
+                option.selected = selected;
+                riskTypeSelect.appendChild(option);
+            });
+        }
+        
+        function updateAssessment(id) {
+            const editLocation = document.getElementById('edit-location');
+            const editRiskType = document.getElementById('edit-risk-type');
+            const editRiskLevel = document.querySelector('input[name="edit-risk-level"]:checked');
+            const editAffected = Array.from(document.querySelectorAll('input[name="edit-affected"]:checked')).map(checkbox => checkbox.value);
+            const editMitigation = document.getElementById('edit-mitigation').value.trim();
+            const editNotes = document.getElementById('edit-notes').value.trim();
+            
+            // Validate required fields
+            if (!editLocation.value || !editRiskType.value || !editRiskLevel || !editMitigation || editAffected.length === 0) {
+                showToast('fill_required_fields');
+                return;
+            }
+            
+            const updatedData = {
+                location: editLocation.options[editLocation.selectedIndex].text,
+                locationKey: editLocation.value,
+                riskType: editRiskType.options[editRiskType.selectedIndex].text,
+                riskTypeKey: editRiskType.value,
+                riskLevel: editRiskLevel.value,
+                affected: editAffected,
+                mitigation: editMitigation,
+                notes: editNotes,
+                language: currentLanguage,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            db.collection('assessments').doc(id).update(updatedData)
+                .then(() => {
+                    document.getElementById('edit-modal').style.display = 'none';
+                    showToast('updated_successfully');
+                    loadAssessments();
+                })
+                .catch(error => {
+                    console.error("Error updating assessment: ", error);
+                    showToast(`Error: ${error.message}`);
+                });
         }
         
         // Toast notification function
@@ -1663,13 +2299,282 @@
             closeButton.addEventListener('click', cancelHandler);
         }
         
+        // PDF Export function
+        function exportToPDF() {
+            const selectedDate = document.getElementById('assessment-date').value;
+            
+            // Query Firestore for assessments on selected date
+            db.collection('assessments')
+                .where('assessmentDate', '==', selectedDate)
+                .get()
+                .then(querySnapshot => {
+                    if (querySnapshot.empty) {
+                        showToast('no_assessments_export');
+                        return;
+                    }
+                    
+                    generatePDF(querySnapshot, selectedDate);
+                })
+                .catch(error => {
+                    console.error("Error exporting to PDF: ", error);
+                    showToast(`Error: ${error.message}`);
+                });
+        }
+        
+        function generatePDF(querySnapshot, selectedDate) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            
+            const dateParts = selectedDate.split('-');
+            const assessmentDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+            const formattedDate = formatDate(assessmentDate);
+            
+            // Set font (use default fonts for Arabic support)
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(16);
+            
+            const title = currentLanguage === 'ar' ? 
+                'مدرسة بني ياس الدولية الخاصة - تقييم المخاطر اليومي' : 
+                'Baniyas International School - Daily Risk Assessment';
+            
+            // Add logo if available
+            const logoImg = document.getElementById('school-logo');
+            if (logoImg.style.display !== 'none' && logoImg.src) {
+                try {
+                    doc.addImage(logoImg.src, 'JPEG', 15, 15, 25, 25);
+                    doc.text(title, 45, 25);
+                } catch (e) {
+                    doc.text(title, 15, 25);
+                }
+            } else {
+                doc.text(title, 15, 25);
+            }
+            
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            
+            const dateLabel = currentLanguage === 'ar' ? 'التاريخ:' : 'Date:';
+            doc.text(`${dateLabel} ${formattedDate}`, 15, 40);
+            
+            // Sort documents by timestamp
+            const sortedDocs = querySnapshot.docs.slice();
+            sortedDocs.sort((a, b) => {
+                const timestampA = a.data().timestamp;
+                const timestampB = b.data().timestamp;
+                
+                if (!timestampA) return -1;
+                if (!timestampB) return 1;
+                
+                return timestampB.seconds - timestampA.seconds || 
+                       timestampB.nanoseconds - timestampA.nanoseconds;
+            });
+            
+            let yPosition = 55;
+            const affectedLabels = getAffectedLabels();
+            
+            sortedDocs.forEach((docSnapshot, index) => {
+                const data = docSnapshot.data();
+                
+                if (yPosition > 250) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+                
+                // Risk assessment entry
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(11);
+                doc.text(`${index + 1}. ${data.location}`, 15, yPosition);
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
+                yPosition += 8;
+                
+                doc.text(`${t('risk_type')}: ${data.riskType}`, 20, yPosition);
+                yPosition += 6;
+                
+                doc.text(`${t('risk_level')}: ${t(data.riskLevel)}`, 20, yPosition);
+                yPosition += 6;
+                
+                const affectedText = data.affected.map(a => affectedLabels[a]).join(', ');
+                doc.text(`${t('affected_people')}: ${affectedText}`, 20, yPosition);
+                yPosition += 6;
+                
+                // Wrap mitigation text
+                const mitigationLines = doc.splitTextToSize(`${t('mitigation_strategy')}: ${data.mitigation}`, 170);
+                doc.text(mitigationLines, 20, yPosition);
+                yPosition += mitigationLines.length * 5;
+                
+                if (data.notes) {
+                    const notesLines = doc.splitTextToSize(`${t('additional_notes')}: ${data.notes}`, 170);
+                    doc.text(notesLines, 20, yPosition);
+                    yPosition += notesLines.length * 5;
+                }
+                
+                let formattedTime = currentLanguage === 'ar' ? 'الآن' : 'Just now';
+                if (data.timestamp) {
+                    const date = data.timestamp.toDate();
+                    formattedTime = formatTime(date);
+                }
+                
+                doc.setFontSize(8);
+                doc.text(`${currentLanguage === 'ar' ? 'الوقت:' : 'Time:'} ${formattedTime} | ${currentLanguage === 'ar' ? 'بواسطة:' : 'By:'} ${data.createdByEmail || (currentLanguage === 'ar' ? 'مجهول' : 'Anonymous')}`, 20, yPosition);
+                
+                yPosition += 12;
+            });
+            
+            // Save the PDF
+            const fileName = `Risk_Assessment_${selectedDate}.pdf`;
+            doc.save(fileName);
+            showToast('pdf_downloaded');
+        }
+        
+        // Print PDF function
+        function printPDF() {
+            const selectedDate = document.getElementById('assessment-date').value;
+            
+            // Query Firestore for assessments on selected date
+            db.collection('assessments')
+                .where('assessmentDate', '==', selectedDate)
+                .get()
+                .then(querySnapshot => {
+                    if (querySnapshot.empty) {
+                        showToast('no_assessments_export');
+                        return;
+                    }
+                    
+                    generateAndPrintPDF(querySnapshot, selectedDate);
+                })
+                .catch(error => {
+                    console.error("Error printing PDF: ", error);
+                    showToast(`Error: ${error.message}`);
+                });
+        }
+        
+        function generateAndPrintPDF(querySnapshot, selectedDate) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            
+            const dateParts = selectedDate.split('-');
+            const assessmentDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+            const formattedDate = formatDate(assessmentDate);
+            
+            // Set font (use default fonts for Arabic support)
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(16);
+            
+            const title = currentLanguage === 'ar' ? 
+                'مدرسة بني ياس الدولية الخاصة - تقييم المخاطر اليومي' : 
+                'Baniyas International School - Daily Risk Assessment';
+            
+            // Add logo if available
+            const logoImg = document.getElementById('school-logo');
+            if (logoImg.style.display !== 'none' && logoImg.src) {
+                try {
+                    doc.addImage(logoImg.src, 'JPEG', 15, 15, 25, 25);
+                    doc.text(title, 45, 25);
+                } catch (e) {
+                    doc.text(title, 15, 25);
+                }
+            } else {
+                doc.text(title, 15, 25);
+            }
+            
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            
+            const dateLabel = currentLanguage === 'ar' ? 'التاريخ:' : 'Date:';
+            doc.text(`${dateLabel} ${formattedDate}`, 15, 40);
+            
+            // Sort documents by timestamp
+            const sortedDocs = querySnapshot.docs.slice();
+            sortedDocs.sort((a, b) => {
+                const timestampA = a.data().timestamp;
+                const timestampB = b.data().timestamp;
+                
+                if (!timestampA) return -1;
+                if (!timestampB) return 1;
+                
+                return timestampB.seconds - timestampA.seconds || 
+                       timestampB.nanoseconds - timestampA.nanoseconds;
+            });
+            
+            let yPosition = 55;
+            const affectedLabels = getAffectedLabels();
+            
+            sortedDocs.forEach((docSnapshot, index) => {
+                const data = docSnapshot.data();
+                
+                if (yPosition > 250) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+                
+                // Risk assessment entry
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(11);
+                doc.text(`${index + 1}. ${data.location}`, 15, yPosition);
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
+                yPosition += 8;
+                
+                doc.text(`${t('risk_type')}: ${data.riskType}`, 20, yPosition);
+                yPosition += 6;
+                
+                doc.text(`${t('risk_level')}: ${t(data.riskLevel)}`, 20, yPosition);
+                yPosition += 6;
+                
+                const affectedText = data.affected.map(a => affectedLabels[a]).join(', ');
+                doc.text(`${t('affected_people')}: ${affectedText}`, 20, yPosition);
+                yPosition += 6;
+                
+                // Wrap mitigation text
+                const mitigationLines = doc.splitTextToSize(`${t('mitigation_strategy')}: ${data.mitigation}`, 170);
+                doc.text(mitigationLines, 20, yPosition);
+                yPosition += mitigationLines.length * 5;
+                
+                if (data.notes) {
+                    const notesLines = doc.splitTextToSize(`${t('additional_notes')}: ${data.notes}`, 170);
+                    doc.text(notesLines, 20, yPosition);
+                    yPosition += notesLines.length * 5;
+                }
+                
+                let formattedTime = currentLanguage === 'ar' ? 'الآن' : 'Just now';
+                if (data.timestamp) {
+                    const date = data.timestamp.toDate();
+                    formattedTime = formatTime(date);
+                }
+                
+                doc.setFontSize(8);
+                doc.text(`${currentLanguage === 'ar' ? 'الوقت:' : 'Time:'} ${formattedTime} | ${currentLanguage === 'ar' ? 'بواسطة:' : 'By:'} ${data.createdByEmail || (currentLanguage === 'ar' ? 'مجهول' : 'Anonymous')}`, 20, yPosition);
+                
+                yPosition += 12;
+            });
+            
+            // Print the PDF
+            doc.autoPrint();
+            const pdfBlob = doc.output('blob');
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+            const printWindow = window.open(pdfUrl);
+            printWindow.onload = function() {
+                printWindow.print();
+            };
+        }
+        
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize language first
             updateLanguage();
             
+            // Load custom data
+            loadCustomData();
+            
+            // Initialize logo
+            initLogo();
+            
             initDatePicker();
             setupAuth();
+            setupManagementModals();
             
             // Language toggle button
             document.getElementById('lang-toggle').addEventListener('click', toggleLanguage);
@@ -1679,19 +2584,7 @@
                 const location = this.value;
                 const riskTypeSelect = document.getElementById('risk-type');
                 
-                // Clear existing options
-                riskTypeSelect.innerHTML = `<option value="" disabled selected>${t('select_risk_type')}</option>`;
-                
-                // Add new options based on selected location
-                const risksByLocation = getRisksByLocation();
-                if (location && risksByLocation[location]) {
-                    risksByLocation[location].forEach(risk => {
-                        const option = document.createElement('option');
-                        option.value = risk.toLowerCase().replace(/\s+/g, '-');
-                        option.textContent = risk;
-                        riskTypeSelect.appendChild(option);
-                    });
-                }
+                updateRiskTypesForLocation(location, riskTypeSelect);
             });
             
             // Auto-fill mitigation when risk type is selected
@@ -1846,8 +2739,22 @@
                 loadAssessments();
             });
             
-            // Export to Excel
+            // Export buttons
             document.getElementById('export-excel').addEventListener('click', exportToExcel);
+            document.getElementById('export-pdf').addEventListener('click', exportToPDF);
+            document.getElementById('print-pdf').addEventListener('click', printPDF);
+            
+            // Management buttons
+            document.getElementById('manage-locations-btn').addEventListener('click', function() {
+                document.getElementById('locations-modal').style.display = 'flex';
+                loadLocationsList();
+            });
+            
+            document.getElementById('manage-risks-btn').addEventListener('click', function() {
+                document.getElementById('risks-modal').style.display = 'flex';
+                loadRisksList();
+                updateLocationDropdowns(); // Refresh risk location dropdown
+            });
             
             // Check auth state
             auth.onAuthStateChanged(user => {
@@ -1872,6 +2779,173 @@
                 }
             });
         });
+        
+        // Setup management modals
+        function setupManagementModals() {
+            // Close modals
+            document.getElementById('close-locations-modal').addEventListener('click', function() {
+                document.getElementById('locations-modal').style.display = 'none';
+            });
+            
+            document.getElementById('close-risks-modal').addEventListener('click', function() {
+                document.getElementById('risks-modal').style.display = 'none';
+            });
+            
+            // Add location form
+            document.getElementById('add-location-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const enName = document.getElementById('location-en').value.trim();
+                const arName = document.getElementById('location-ar').value.trim();
+                
+                if (!enName || !arName) {
+                    showToast('fill_required_fields');
+                    return;
+                }
+                
+                const locationKey = enName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+                
+                customLocations[locationKey] = {
+                    en: enName,
+                    ar: arName
+                };
+                
+                saveCustomData();
+                updateLocationDropdowns();
+                loadLocationsList();
+                showToast('location_added');
+                
+                // Reset form
+                this.reset();
+            });
+            
+            // Add risk type form
+            document.getElementById('add-risk-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const locationKey = document.getElementById('risk-location-select').value;
+                const enRisk = document.getElementById('risk-en').value.trim();
+                const arRisk = document.getElementById('risk-ar').value.trim();
+                
+                if (!locationKey || !enRisk || !arRisk) {
+                    showToast('fill_required_fields');
+                    return;
+                }
+                
+                if (!customRiskTypes[locationKey]) {
+                    customRiskTypes[locationKey] = {};
+                }
+                
+                const riskKey = enRisk.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+                
+                customRiskTypes[locationKey][riskKey] = {
+                    en: enRisk,
+                    ar: arRisk
+                };
+                
+                saveCustomData();
+                loadRisksList();
+                showToast('risk_type_added');
+                
+                // Reset form
+                this.reset();
+            });
+        }
+        
+        function loadLocationsList() {
+            const locationsList = document.getElementById('locations-list');
+            const existingHeader = locationsList.querySelector('h4');
+            locationsList.innerHTML = '';
+            
+            if (existingHeader) {
+                locationsList.appendChild(existingHeader);
+            }
+            
+            // Show default locations
+            const defaultLocations = getDefaultLocations();
+            Object.keys(defaultLocations).forEach(key => {
+                const location = defaultLocations[key];
+                const div = document.createElement('div');
+                div.className = 'p-2 bg-gray-100 dark:bg-gray-700 rounded text-sm';
+                div.innerHTML = `
+                    <strong>${location.en}</strong> / ${location.ar}
+                    <span class="text-xs text-gray-500 dark:text-gray-400 block">Default</span>
+                `;
+                locationsList.appendChild(div);
+            });
+            
+            // Show custom locations
+            Object.keys(customLocations).forEach(key => {
+                const location = customLocations[key];
+                const div = document.createElement('div');
+                div.className = 'p-2 bg-blue-100 dark:bg-blue-900 rounded text-sm';
+                div.innerHTML = `
+                    <strong>${location.en}</strong> / ${location.ar}
+                    <span class="text-xs text-gray-500 dark:text-gray-400 block">Custom</span>
+                `;
+                locationsList.appendChild(div);
+            });
+        }
+        
+        function loadRisksList() {
+            const risksList = document.getElementById('risks-list');
+            const existingHeader = risksList.querySelector('h4');
+            risksList.innerHTML = '';
+            
+            if (existingHeader) {
+                risksList.appendChild(existingHeader);
+            }
+            
+            // Show default risks
+            const defaultRisks = getRisksByLocation();
+            Object.keys(defaultRisks).forEach(locationKey => {
+                const locationName = getLocationName(locationKey);
+                const risks = defaultRisks[locationKey];
+                
+                const locationDiv = document.createElement('div');
+                locationDiv.className = 'mb-3';
+                locationDiv.innerHTML = `
+                    <h5 class="font-medium text-sm mb-2">${locationName}</h5>
+                    <div class="space-y-1 ml-3">
+                        ${risks.map(risk => `
+                            <div class="text-xs p-1 bg-gray-100 dark:bg-gray-700 rounded">
+                                ${risk} <span class="text-gray-500">(Default)</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                risksList.appendChild(locationDiv);
+            });
+            
+            // Show custom risks
+            Object.keys(customRiskTypes).forEach(locationKey => {
+                const locationName = getLocationName(locationKey);
+                const risks = customRiskTypes[locationKey];
+                
+                const locationDiv = document.createElement('div');
+                locationDiv.className = 'mb-3';
+                locationDiv.innerHTML = `
+                    <h5 class="font-medium text-sm mb-2">${locationName}</h5>
+                    <div class="space-y-1 ml-3">
+                        ${Object.keys(risks).map(riskKey => {
+                            const risk = risks[riskKey];
+                            return `
+                                <div class="text-xs p-1 bg-blue-100 dark:bg-blue-900 rounded">
+                                    ${risk.en} / ${risk.ar} <span class="text-gray-500">(Custom)</span>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                risksList.appendChild(locationDiv);
+            });
+        }
+        
+        function getLocationName(locationKey) {
+            const allLocations = { ...getDefaultLocations(), ...customLocations };
+            const location = allLocations[locationKey];
+            return location ? (location[currentLanguage] || location['en']) : locationKey;
+        }
         
         // Setup authentication UI
         function setupAuth() {
@@ -1958,7 +3032,9 @@
             const assessmentList = document.getElementById('assessment-list');
             const noAssessments = document.getElementById('no-assessments');
             const loadingAssessments = document.getElementById('loading-assessments');
-            const exportButton = document.getElementById('export-excel');
+            const exportExcelButton = document.getElementById('export-excel');
+            const exportPdfButton = document.getElementById('export-pdf');
+            const printPdfButton = document.getElementById('print-pdf');
             const tableContainer = document.getElementById('assessment-table-container');
             const indexErrorContainer = document.getElementById('index-error-container');
             
@@ -1985,12 +3061,16 @@
                     if (querySnapshot.empty) {
                         noAssessments.classList.remove('hidden');
                         loadingAssessments.classList.add('hidden');
-                        exportButton.setAttribute('disabled', 'true');
+                        exportExcelButton.setAttribute('disabled', 'true');
+                        exportPdfButton.setAttribute('disabled', 'true');
+                        printPdfButton.setAttribute('disabled', 'true');
                         return;
                     }
                     
-                    // Enable export button
-                    exportButton.removeAttribute('disabled');
+                    // Enable export buttons
+                    exportExcelButton.removeAttribute('disabled');
+                    exportPdfButton.removeAttribute('disabled');
+                    printPdfButton.removeAttribute('disabled');
                     
                     // Sort documents manually by timestamp (descending)
                     const sortedDocs = querySnapshot.docs.slice();
@@ -2057,25 +3137,45 @@
                 `<span class="chip chip-${person}">${affectedLabels[person]}</span>`
             ).join('');
             
-            // Risk level display with appropriate color
-            const riskLevelHtml = `<span class="${assessment.riskLevel === 'high' ? 'text-red-500' : assessment.riskLevel === 'medium' ? 'text-orange-500' : 'text-green-500'} font-medium">
+            // Risk level display with appropriate styling
+            const riskLevelHtml = `<span class="risk-badge risk-badge-${assessment.riskLevel}">
                 ${t(assessment.riskLevel)}
             </span>`;
             
             // Build table cell HTML
             row.innerHTML = `
                 <td class="font-medium">${assessment.location}</td>
-                <td>${assessment.riskType}</td>
+                <td>
+                    <div class="max-w-xs">
+                        <p class="font-medium text-sm">${assessment.riskType}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">${formattedTime}</p>
+                    </div>
+                </td>
                 <td>${riskLevelHtml}</td>
                 <td>${affectedChips}</td>
                 <td>
-                    <div class="max-w-xs truncate">${assessment.mitigation.substring(0, 100)}${assessment.mitigation.length > 100 ? '...' : ''}</div>
+                    <div class="max-w-xs">
+                        <p class="text-sm">${assessment.mitigation.substring(0, 100)}${assessment.mitigation.length > 100 ? '...' : ''}</p>
+                    </div>
                 </td>
                 <td class="whitespace-nowrap">
-                    <button class="view-btn text-primary hover:text-primary-dark mr-3 rtl:mr-0 rtl:ml-3 transition">
+                    <button class="view-btn action-btn action-btn-view">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
                         ${t('view')}
                     </button>
-                    <button class="delete-btn text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition">
+                    <button class="edit-btn action-btn action-btn-edit">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        ${t('edit')}
+                    </button>
+                    <button class="delete-btn action-btn action-btn-delete">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
                         ${t('delete')}
                     </button>
                 </td>
@@ -2084,6 +3184,11 @@
             // Add view functionality
             row.querySelector('.view-btn').addEventListener('click', function() {
                 showAssessmentDetails(assessment);
+            });
+            
+            // Add edit functionality
+            row.querySelector('.edit-btn').addEventListener('click', function() {
+                showEditAssessment(id, assessment);
             });
             
             // Add delete functionality
@@ -2115,12 +3220,16 @@
                     const assessmentList = document.getElementById('assessment-list');
                     const noAssessments = document.getElementById('no-assessments');
                     const tableContainer = document.getElementById('assessment-table-container');
-                    const exportButton = document.getElementById('export-excel');
+                    const exportExcelButton = document.getElementById('export-excel');
+                    const exportPdfButton = document.getElementById('export-pdf');
+                    const printPdfButton = document.getElementById('print-pdf');
                     
                     if (assessmentList.children.length === 0) {
                         noAssessments.classList.remove('hidden');
                         tableContainer.classList.add('hidden');
-                        exportButton.setAttribute('disabled', 'true');
+                        exportExcelButton.setAttribute('disabled', 'true');
+                        exportPdfButton.setAttribute('disabled', 'true');
+                        printPdfButton.setAttribute('disabled', 'true');
                     }
                     
                     showToast('deleted_successfully');
@@ -2283,7 +3392,7 @@
                     
                     // Create worksheet data
                     const title = currentLanguage === 'ar' ? 
-                        'مدرسة  بتي ياس الدولية الخاصة - تقييم المخاطر اليومي' : 
+                        'مدرسة بني ياس الدولية الخاصة - تقييم المخاطر اليومي' : 
                         'Baniyas International School - Daily Risk Assessment';
                     const dateLabel = currentLanguage === 'ar' ? 'التاريخ:' : 'Date:';
                     
