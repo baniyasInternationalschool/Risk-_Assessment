@@ -589,6 +589,45 @@
         [dir="rtl"] .text-right {
             text-align: left;
         }
+
+        /* Enhanced management modal styles */
+        .management-item {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .management-item:hover {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .management-item {
+            background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+            border: 1px solid #6b7280;
+        }
+
+        .dark .management-item:hover {
+            background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
+        }
+
+        .management-item-custom {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 1px solid #93c5fd;
+        }
+
+        .management-item-custom:hover {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+
+        .dark .management-item-custom {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            border: 1px solid #3b82f6;
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
@@ -684,6 +723,29 @@
                     </div>
                 </div>
             </header>
+
+            <!-- Statistics Dashboard -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <h3 class="text-lg font-medium mb-4" data-i18n="risk_statistics">Risk Statistics</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-200 dark:border-red-800">
+                        <div class="text-2xl font-bold text-red-600 dark:text-red-400" id="high-risk-count">0</div>
+                        <div class="text-sm text-red-700 dark:text-red-300" data-i18n="high_risks">High Risks</div>
+                    </div>
+                    <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg border border-orange-200 dark:border-orange-800">
+                        <div class="text-2xl font-bold text-orange-600 dark:text-orange-400" id="medium-risk-count">0</div>
+                        <div class="text-sm text-orange-700 dark:text-orange-300" data-i18n="medium_risks">Medium Risks</div>
+                    </div>
+                    <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
+                        <div class="text-2xl font-bold text-green-600 dark:text-green-400" id="low-risk-count">0</div>
+                        <div class="text-sm text-green-700 dark:text-green-300" data-i18n="low_risks">Low Risks</div>
+                    </div>
+                    <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" id="total-risk-count">0</div>
+                        <div class="text-sm text-blue-700 dark:text-blue-300" data-i18n="total_risks">Total Risks</div>
+                    </div>
+                </div>
+            </div>
             
             <!-- Advanced Search Panel -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
@@ -885,12 +947,18 @@
                     <div id="assessment-results" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-medium" data-i18n="risk_assessments">Risk Assessments</h3>
-                            <div class="flex space-x-2 rtl:space-x-reverse">
+                            <div class="flex flex-wrap gap-2">
                                 <button id="export-excel" class="py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition duration-200 flex items-center" disabled>
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 rtl:mr-0 rtl:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                     </svg>
                                     <span data-i18n="export_excel">Export to Excel</span>
+                                </button>
+                                <button id="export-bilingual" class="py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition duration-200 flex items-center" disabled>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 rtl:mr-0 rtl:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                                    </svg>
+                                    <span data-i18n="export_bilingual">Export Bilingual</span>
                                 </button>
                                 <button id="export-pdf" class="py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition duration-200 flex items-center" disabled>
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 rtl:mr-0 rtl:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -975,7 +1043,7 @@
         </div>
     </div>
 
-    <!-- Manage Locations Modal -->
+    <!-- Enhanced Manage Locations Modal -->
     <div id="locations-modal" class="modal">
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
@@ -987,8 +1055,8 @@
                 </button>
             </div>
             <div class="space-y-4">
-                <form id="add-location-form" class="space-y-3">
-                    <h4 class="font-medium" data-i18n="add_new_location">Add New Location</h4>
+                <form id="add-location-form" class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800 space-y-3">
+                    <h4 class="font-medium text-blue-800 dark:text-blue-200" data-i18n="add_new_location">Add New Location</h4>
                     <div>
                         <label for="location-en" class="block text-sm font-medium mb-1">English Name:</label>
                         <input type="text" id="location-en" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-base" required>
@@ -997,7 +1065,7 @@
                         <label for="location-ar" class="block text-sm font-medium mb-1">Arabic Name:</label>
                         <input type="text" id="location-ar" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-base" required>
                     </div>
-                    <button type="submit" class="w-full py-2 px-4 bg-primary hover:bg-primary-dark text-white font-medium rounded-lg transition" data-i18n="add_location">
+                    <button type="submit" class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition" data-i18n="add_location">
                         Add Location
                     </button>
                 </form>
@@ -1010,7 +1078,7 @@
         </div>
     </div>
 
-    <!-- Manage Risk Types Modal -->
+    <!-- Enhanced Manage Risk Types Modal -->
     <div id="risks-modal" class="modal">
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
@@ -1022,8 +1090,8 @@
                 </button>
             </div>
             <div class="space-y-4">
-                <form id="add-risk-form" class="space-y-3">
-                    <h4 class="font-medium" data-i18n="add_new_risk_type">Add New Risk Type</h4>
+                <form id="add-risk-form" class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800 space-y-3">
+                    <h4 class="font-medium text-purple-800 dark:text-purple-200" data-i18n="add_new_risk_type">Add New Risk Type</h4>
                     <div>
                         <label for="risk-location-select" class="block text-sm font-medium mb-1" data-i18n="location">Location:</label>
                         <select id="risk-location-select" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-base" required>
@@ -1038,7 +1106,7 @@
                         <label for="risk-ar" class="block text-sm font-medium mb-1">Arabic Risk Type:</label>
                         <input type="text" id="risk-ar" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-base" required>
                     </div>
-                    <button type="submit" class="w-full py-2 px-4 bg-primary hover:bg-primary-dark text-white font-medium rounded-lg transition" data-i18n="add_risk_type">
+                    <button type="submit" class="w-full py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition" data-i18n="add_risk_type">
                         Add Risk Type
                     </button>
                 </form>
@@ -1130,6 +1198,11 @@
                 // Main App
                 daily_risk_assessment: "Daily Risk Assessment",
                 assessment_date: "Assessment Date:",
+                risk_statistics: "Risk Statistics",
+                high_risks: "High Risks",
+                medium_risks: "Medium Risks",
+                low_risks: "Low Risks",
+                total_risks: "Total Risks",
                 advanced_search: "Advanced Search",
                 show_search: "Show Search",
                 hide_search: "Hide Search",
@@ -1195,6 +1268,7 @@
                 // Assessment Results
                 risk_assessments: "Risk Assessments",
                 export_excel: "Export to Excel",
+                export_bilingual: "Export Bilingual",
                 export_pdf: "Export to PDF",
                 print_pdf: "Print PDF",
                 loading_assessments: "Loading assessments...",
@@ -1233,6 +1307,7 @@
                 account_created_successfully: "Account created successfully",
                 no_assessments_export: "No assessments to export",
                 excel_downloaded: "Excel file downloaded successfully",
+                bilingual_downloaded: "Bilingual Excel file downloaded successfully",
                 pdf_downloaded: "PDF file downloaded successfully",
                 location_added: "Location added successfully",
                 risk_type_added: "Risk type added successfully",
@@ -1258,6 +1333,11 @@
                 // Main App
                 daily_risk_assessment: "تقييم المخاطر اليومي",
                 assessment_date: "تاريخ التقييم:",
+                risk_statistics: "إحصائيات المخاطر",
+                high_risks: "مخاطر عالية",
+                medium_risks: "مخاطر متوسطة",
+                low_risks: "مخاطر منخفضة",
+                total_risks: "إجمالي المخاطر",
                 advanced_search: "البحث المتقدم",
                 show_search: "إظهار البحث",
                 hide_search: "إخفاء البحث",
@@ -1323,6 +1403,7 @@
                 // Assessment Results
                 risk_assessments: "تقييمات المخاطر",
                 export_excel: "تصدير إلى Excel",
+                export_bilingual: "تصدير ثنائي اللغة",
                 export_pdf: "تصدير إلى PDF",
                 print_pdf: "طباعة PDF",
                 loading_assessments: "جاري تحميل التقييمات...",
@@ -1361,6 +1442,7 @@
                 account_created_successfully: "تم إنشاء الحساب بنجاح",
                 no_assessments_export: "لا توجد تقييمات للتصدير",
                 excel_downloaded: "تم تنزيل ملف Excel بنجاح",
+                bilingual_downloaded: "تم تنزيل ملف Excel ثنائي اللغة بنجاح",
                 pdf_downloaded: "تم تنزيل ملف PDF بنجاح",
                 location_added: "تم إضافة المكان بنجاح",
                 risk_type_added: "تم إضافة نوع المخاطر بنجاح",
@@ -1376,6 +1458,14 @@
         // Custom locations and risk types storage
         let customLocations = {};
         let customRiskTypes = {};
+        
+        // Risk statistics
+        let riskStats = {
+            high: 0,
+            medium: 0,
+            low: 0,
+            total: 0
+        };
         
         // Initialize dark mode based on user preference
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -1473,6 +1563,27 @@
                     element.setAttribute('placeholder', translations[currentLanguage][key]);
                 }
             });
+        }
+        
+        // Update risk statistics display
+        function updateRiskStatistics() {
+            document.getElementById('high-risk-count').textContent = riskStats.high;
+            document.getElementById('medium-risk-count').textContent = riskStats.medium;
+            document.getElementById('low-risk-count').textContent = riskStats.low;
+            document.getElementById('total-risk-count').textContent = riskStats.total;
+        }
+        
+        // Calculate risk statistics from assessments
+        function calculateRiskStatistics(assessments) {
+            riskStats = { high: 0, medium: 0, low: 0, total: 0 };
+            
+            assessments.forEach(assessment => {
+                const data = assessment.data();
+                riskStats[data.riskLevel]++;
+                riskStats.total++;
+            });
+            
+            updateRiskStatistics();
         }
         
         function updateLocationDropdowns() {
@@ -2299,6 +2410,186 @@
             closeButton.addEventListener('click', cancelHandler);
         }
         
+        // Enhanced Export to Bilingual Excel function
+        function exportToBilingualExcel() {
+            const selectedDate = document.getElementById('assessment-date').value;
+            
+            // Query Firestore for assessments on selected date
+            db.collection('assessments')
+                .where('assessmentDate', '==', selectedDate)
+                .get()
+                .then(querySnapshot => {
+                    if (querySnapshot.empty) {
+                        showToast('no_assessments_export');
+                        return;
+                    }
+                    
+                    // Format date for display
+                    const dateParts = selectedDate.split('-');
+                    const assessmentDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+                    const formattedDateEn = assessmentDate.toLocaleDateString('en-US', { 
+                        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+                    });
+                    const formattedDateAr = assessmentDate.toLocaleDateString('ar-EG', { 
+                        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+                    });
+                    
+                    // Create bilingual headers
+                    const headers = [
+                        'Location / المكان',
+                        'Risk Type / نوع المخاطر',
+                        'Risk Level / مستوى المخاطر',
+                        'Affected People / الأشخاص المتأثرون',
+                        'Mitigation Strategy / استراتيجية التخفيف',
+                        'Additional Notes / ملاحظات إضافية',
+                        'Time / الوقت',
+                        'Created By / أُنشئ بواسطة'
+                    ];
+                    
+                    const worksheet = [
+                        ['Baniyas International School - Daily Risk Assessment / مدرسة بني ياس الدولية الخاصة - تقييم المخاطر اليومي'],
+                        [`Date / التاريخ: ${formattedDateEn} / ${formattedDateAr}`],
+                        [''],
+                        headers
+                    ];
+                    
+                    // Sort documents by timestamp if possible
+                    const sortedDocs = querySnapshot.docs.slice();
+                    sortedDocs.sort((a, b) => {
+                        const timestampA = a.data().timestamp;
+                        const timestampB = b.data().timestamp;
+                        
+                        if (!timestampA) return -1;
+                        if (!timestampB) return 1;
+                        
+                        return timestampB.seconds - timestampA.seconds || 
+                               timestampB.nanoseconds - timestampA.nanoseconds;
+                    });
+                    
+                    // Add assessments to worksheet with bilingual content
+                    sortedDocs.forEach(doc => {
+                        const data = doc.data();
+                        let formattedTime = 'Now / الآن';
+                        
+                        if (data.timestamp) {
+                            const date = data.timestamp.toDate();
+                            const timeEn = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                            const timeAr = date.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                            formattedTime = `${timeEn} / ${timeAr}`;
+                        }
+                        
+                        // Get location in both languages
+                        const allLocations = { ...getDefaultLocations(), ...customLocations };
+                        const locationKey = data.locationKey || getLocationKeyFromName(data.location);
+                        const locationEn = allLocations[locationKey]?.en || data.location;
+                        const locationAr = allLocations[locationKey]?.ar || data.location;
+                        
+                        // Get risk type in both languages
+                        const riskTypeEn = data.riskType;
+                        const riskTypeAr = getRiskTypeInArabic(locationKey, data.riskTypeKey) || data.riskType;
+                        
+                        // Get risk level in both languages
+                        const riskLevelEn = data.riskLevel.charAt(0).toUpperCase() + data.riskLevel.slice(1);
+                        const riskLevelAr = translations.ar[data.riskLevel] || data.riskLevel;
+                        
+                        // Get affected people in both languages
+                        const affectedEn = data.affected.map(a => affectedLabelsEn[a]).join(', ');
+                        const affectedAr = data.affected.map(a => affectedLabelsAr[a]).join(', ');
+                        
+                        worksheet.push([
+                            `${locationEn} / ${locationAr}`,
+                            `${riskTypeEn} / ${riskTypeAr}`,
+                            `${riskLevelEn} / ${riskLevelAr}`,
+                            `${affectedEn} / ${affectedAr}`,
+                            data.mitigation,
+                            data.notes || '',
+                            formattedTime,
+                            data.createdByEmail || 'Anonymous / مجهول'
+                        ]);
+                    });
+                    
+                    // Create a workbook
+                    const wb = XLSX.utils.book_new();
+                    const ws = XLSX.utils.aoa_to_sheet(worksheet);
+                    
+                    // Set column widths
+                    const colWidths = [
+                        { wch: 25 }, // Location
+                        { wch: 35 }, // Risk Type
+                        { wch: 15 }, // Risk Level
+                        { wch: 25 }, // Affected People
+                        { wch: 45 }, // Mitigation Strategy
+                        { wch: 35 }, // Notes
+                        { wch: 15 }, // Time
+                        { wch: 30 }  // Created By
+                    ];
+                    ws['!cols'] = colWidths;
+                    
+                    // Add worksheet to workbook
+                    XLSX.utils.book_append_sheet(wb, ws, 'Risk Assessment - Bilingual');
+                    
+                    // Export to Excel file
+                    try {
+                        // Generate Excel file as array buffer
+                        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+                        
+                        // Convert to Blob
+                        const blob = new Blob([wbout], { type: 'application/octet-stream' });
+                        
+                        // Create filename
+                        const fileName = `Risk_Assessment_Bilingual_${selectedDate}.xlsx`;
+                        
+                        // Use FileSaver.js to save the file
+                        saveAs(blob, fileName);
+                        
+                        showToast('bilingual_downloaded');
+                    } catch (e) {
+                        console.error('Error during bilingual Excel export:', e);
+                        const errorMessage = `${currentLanguage === 'ar' ? 'خطأ في تصدير Excel ثنائي اللغة:' : 'Error exporting bilingual Excel:'} ${e.message}`;
+                        showToast(errorMessage, 5000);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error exporting bilingual Excel: ", error);
+                    const errorMessage = `${currentLanguage === 'ar' ? 'خطأ في تصدير Excel ثنائي اللغة:' : 'Error exporting bilingual Excel:'} ${error.message}`;
+                    showToast(errorMessage, 5000);
+                });
+        }
+        
+        // Helper function to get location key from name
+        function getLocationKeyFromName(locationName) {
+            const allLocations = { ...getDefaultLocations(), ...customLocations };
+            for (const [key, location] of Object.entries(allLocations)) {
+                if (location.en === locationName || location.ar === locationName) {
+                    return key;
+                }
+            }
+            return null;
+        }
+        
+        // Helper function to get risk type in Arabic
+        function getRiskTypeInArabic(locationKey, riskTypeKey) {
+            // Check custom risk types first
+            if (customRiskTypes[locationKey] && customRiskTypes[locationKey][riskTypeKey]) {
+                return customRiskTypes[locationKey][riskTypeKey].ar;
+            }
+            
+            // Check default risk types
+            const defaultRisksAr = risksByLocationAr[locationKey] || [];
+            const defaultRisksEn = risksByLocationEn[locationKey] || [];
+            
+            // Find the index in English risks and get corresponding Arabic
+            const index = defaultRisksEn.findIndex(risk => 
+                risk.toLowerCase().replace(/\s+/g, '-') === riskTypeKey
+            );
+            
+            if (index !== -1 && defaultRisksAr[index]) {
+                return defaultRisksAr[index];
+            }
+            
+            return null;
+        }
+        
         // PDF Export function
         function exportToPDF() {
             const selectedDate = document.getElementById('assessment-date').value;
@@ -2741,6 +3032,7 @@
             
             // Export buttons
             document.getElementById('export-excel').addEventListener('click', exportToExcel);
+            document.getElementById('export-bilingual').addEventListener('click', exportToBilingualExcel);
             document.getElementById('export-pdf').addEventListener('click', exportToPDF);
             document.getElementById('print-pdf').addEventListener('click', printPDF);
             
@@ -2854,22 +3146,26 @@
         
         function loadLocationsList() {
             const locationsList = document.getElementById('locations-list');
-            const existingHeader = locationsList.querySelector('h4');
-            locationsList.innerHTML = '';
             
-            if (existingHeader) {
-                locationsList.appendChild(existingHeader);
-            }
+            // Remove old content except header
+            const children = Array.from(locationsList.children);
+            children.slice(1).forEach(child => child.remove());
             
             // Show default locations
             const defaultLocations = getDefaultLocations();
             Object.keys(defaultLocations).forEach(key => {
                 const location = defaultLocations[key];
                 const div = document.createElement('div');
-                div.className = 'p-2 bg-gray-100 dark:bg-gray-700 rounded text-sm';
+                div.className = 'management-item';
                 div.innerHTML = `
-                    <strong>${location.en}</strong> / ${location.ar}
-                    <span class="text-xs text-gray-500 dark:text-gray-400 block">Default</span>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <strong class="text-blue-600 dark:text-blue-400">${location.en}</strong>
+                            <span class="mx-2 text-gray-400">/</span>
+                            <strong class="text-blue-600 dark:text-blue-400">${location.ar}</strong>
+                        </div>
+                        <span class="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-gray-600 dark:text-gray-300">Default</span>
+                    </div>
                 `;
                 locationsList.appendChild(div);
             });
@@ -2878,10 +3174,16 @@
             Object.keys(customLocations).forEach(key => {
                 const location = customLocations[key];
                 const div = document.createElement('div');
-                div.className = 'p-2 bg-blue-100 dark:bg-blue-900 rounded text-sm';
+                div.className = 'management-item management-item-custom';
                 div.innerHTML = `
-                    <strong>${location.en}</strong> / ${location.ar}
-                    <span class="text-xs text-gray-500 dark:text-gray-400 block">Custom</span>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <strong class="text-blue-600 dark:text-blue-400">${location.en}</strong>
+                            <span class="mx-2 text-gray-400">/</span>
+                            <strong class="text-blue-600 dark:text-blue-400">${location.ar}</strong>
+                        </div>
+                        <span class="text-xs bg-blue-200 dark:bg-blue-600 px-2 py-1 rounded text-blue-700 dark:text-blue-200">Custom</span>
+                    </div>
                 `;
                 locationsList.appendChild(div);
             });
@@ -2889,55 +3191,88 @@
         
         function loadRisksList() {
             const risksList = document.getElementById('risks-list');
-            const existingHeader = risksList.querySelector('h4');
-            risksList.innerHTML = '';
             
-            if (existingHeader) {
-                risksList.appendChild(existingHeader);
-            }
+            // Remove old content except header
+            const children = Array.from(risksList.children);
+            children.slice(1).forEach(child => child.remove());
             
-            // Show default risks
+            // Show default risks by location
             const defaultRisks = getRisksByLocation();
             Object.keys(defaultRisks).forEach(locationKey => {
                 const locationName = getLocationName(locationKey);
                 const risks = defaultRisks[locationKey];
                 
                 const locationDiv = document.createElement('div');
-                locationDiv.className = 'mb-3';
-                locationDiv.innerHTML = `
-                    <h5 class="font-medium text-sm mb-2">${locationName}</h5>
-                    <div class="space-y-1 ml-3">
-                        ${risks.map(risk => `
-                            <div class="text-xs p-1 bg-gray-100 dark:bg-gray-700 rounded">
-                                ${risk} <span class="text-gray-500">(Default)</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
+                locationDiv.className = 'mb-4';
+                
+                const locationHeader = document.createElement('h5');
+                locationHeader.className = 'font-medium text-sm mb-2 text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600 pb-1';
+                locationHeader.textContent = locationName;
+                locationDiv.appendChild(locationHeader);
+                
+                const risksContainer = document.createElement('div');
+                risksContainer.className = 'space-y-1 ml-3 rtl:ml-0 rtl:mr-3';
+                
+                risks.forEach(risk => {
+                    const riskDiv = document.createElement('div');
+                    riskDiv.className = 'management-item text-xs';
+                    riskDiv.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-700 dark:text-gray-300">${risk}</span>
+                            <span class="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-gray-600 dark:text-gray-300">Default</span>
+                        </div>
+                    `;
+                    risksContainer.appendChild(riskDiv);
+                });
+                
+                locationDiv.appendChild(risksContainer);
                 risksList.appendChild(locationDiv);
             });
             
-            // Show custom risks
+            // Show custom risks by location
             Object.keys(customRiskTypes).forEach(locationKey => {
                 const locationName = getLocationName(locationKey);
                 const risks = customRiskTypes[locationKey];
                 
-                const locationDiv = document.createElement('div');
-                locationDiv.className = 'mb-3';
-                locationDiv.innerHTML = `
-                    <h5 class="font-medium text-sm mb-2">${locationName}</h5>
-                    <div class="space-y-1 ml-3">
-                        ${Object.keys(risks).map(riskKey => {
-                            const risk = risks[riskKey];
-                            return `
-                                <div class="text-xs p-1 bg-blue-100 dark:bg-blue-900 rounded">
-                                    ${risk.en} / ${risk.ar} <span class="text-gray-500">(Custom)</span>
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                `;
-                risksList.appendChild(locationDiv);
+                // Check if we already have a location section for this location
+                let locationDiv = Array.from(risksList.children).find(child => 
+                    child.querySelector('h5')?.textContent === locationName
+                );
+                
+                if (!locationDiv) {
+                    locationDiv = document.createElement('div');
+                    locationDiv.className = 'mb-4';
+                    
+                    const locationHeader = document.createElement('h5');
+                    locationHeader.className = 'font-medium text-sm mb-2 text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600 pb-1';
+                    locationHeader.textContent = locationName;
+                    locationDiv.appendChild(locationHeader);
+                    
+                    const risksContainer = document.createElement('div');
+                    risksContainer.className = 'space-y-1 ml-3 rtl:ml-0 rtl:mr-3';
+                    locationDiv.appendChild(risksContainer);
+                    
+                    risksList.appendChild(locationDiv);
+                }
+                
+                const risksContainer = locationDiv.querySelector('.space-y-1');
+                
+                Object.keys(risks).forEach(riskKey => {
+                    const risk = risks[riskKey];
+                    const riskDiv = document.createElement('div');
+                    riskDiv.className = 'management-item management-item-custom text-xs';
+                    riskDiv.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="text-blue-600 dark:text-blue-400">${risk.en}</span>
+                                <span class="mx-1 text-gray-400">/</span>
+                                <span class="text-blue-600 dark:text-blue-400">${risk.ar}</span>
+                            </div>
+                            <span class="text-xs bg-blue-200 dark:bg-blue-600 px-2 py-1 rounded text-blue-700 dark:text-blue-200">Custom</span>
+                        </div>
+                    `;
+                    risksContainer.appendChild(riskDiv);
+                });
             });
         }
         
@@ -3033,6 +3368,7 @@
             const noAssessments = document.getElementById('no-assessments');
             const loadingAssessments = document.getElementById('loading-assessments');
             const exportExcelButton = document.getElementById('export-excel');
+            const exportBilingualButton = document.getElementById('export-bilingual');
             const exportPdfButton = document.getElementById('export-pdf');
             const printPdfButton = document.getElementById('print-pdf');
             const tableContainer = document.getElementById('assessment-table-container');
@@ -3062,15 +3398,24 @@
                         noAssessments.classList.remove('hidden');
                         loadingAssessments.classList.add('hidden');
                         exportExcelButton.setAttribute('disabled', 'true');
+                        exportBilingualButton.setAttribute('disabled', 'true');
                         exportPdfButton.setAttribute('disabled', 'true');
                         printPdfButton.setAttribute('disabled', 'true');
+                        
+                        // Reset statistics
+                        riskStats = { high: 0, medium: 0, low: 0, total: 0 };
+                        updateRiskStatistics();
                         return;
                     }
                     
                     // Enable export buttons
                     exportExcelButton.removeAttribute('disabled');
+                    exportBilingualButton.removeAttribute('disabled');
                     exportPdfButton.removeAttribute('disabled');
                     printPdfButton.removeAttribute('disabled');
+                    
+                    // Calculate statistics
+                    calculateRiskStatistics(querySnapshot.docs);
                     
                     // Sort documents manually by timestamp (descending)
                     const sortedDocs = querySnapshot.docs.slice();
@@ -3221,6 +3566,7 @@
                     const noAssessments = document.getElementById('no-assessments');
                     const tableContainer = document.getElementById('assessment-table-container');
                     const exportExcelButton = document.getElementById('export-excel');
+                    const exportBilingualButton = document.getElementById('export-bilingual');
                     const exportPdfButton = document.getElementById('export-pdf');
                     const printPdfButton = document.getElementById('print-pdf');
                     
@@ -3228,8 +3574,16 @@
                         noAssessments.classList.remove('hidden');
                         tableContainer.classList.add('hidden');
                         exportExcelButton.setAttribute('disabled', 'true');
+                        exportBilingualButton.setAttribute('disabled', 'true');
                         exportPdfButton.setAttribute('disabled', 'true');
                         printPdfButton.setAttribute('disabled', 'true');
+                        
+                        // Reset statistics
+                        riskStats = { high: 0, medium: 0, low: 0, total: 0 };
+                        updateRiskStatistics();
+                    } else {
+                        // Recalculate statistics
+                        loadAssessments();
                     }
                     
                     showToast('deleted_successfully');
@@ -3337,8 +3691,16 @@
                             'No matching risk assessments found.';
                         noAssessments.classList.remove('hidden');
                         loadingAssessments.classList.add('hidden');
+                        
+                        // Reset statistics
+                        riskStats = { high: 0, medium: 0, low: 0, total: 0 };
+                        updateRiskStatistics();
                         return;
                     }
+                    
+                    // Calculate statistics for filtered results
+                    const filteredDocs = filteredResults.map(result => ({ data: () => result.data }));
+                    calculateRiskStatistics(filteredDocs);
                     
                     // Display filtered assessments
                     filteredResults.forEach(result => {
